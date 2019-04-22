@@ -225,3 +225,12 @@ do
 done
 
 ```
+
+### 5.metric
+```
+TASK [openshift_metrics : generate htpasswd file for hawkular metrics] *********************************************************************
+fatal: [node01.example.com -> localhost]: FAILED! => {"changed": false, "msg": "This module requires the passlib Python library"}
+        to retry, use: --limit @/root/openshift-ansible/playbooks/deploy_cluster.retry
+        
+        
+```
