@@ -233,4 +233,12 @@ fatal: [node01.example.com -> localhost]: FAILED! => {"changed": false, "msg": "
         to retry, use: --limit @/root/openshift-ansible/playbooks/deploy_cluster.retry
         
         
+[root@node01 ~]# pip install passlib
+Collecting passlib
+  Downloading https://files.pythonhosted.org/packages/ee/a7/d6d238d927df355d4e4e000670342ca4705a72f0bf694027cf67d9bcf5af/passlib-1.7.1-py2.py3-none-any.whl (498kB)
+    100% |████████████████████████████████| 501kB 293kB/s 
+Installing collected packages: passlib
+Successfully installed passlib-1.7.1
+You are using pip version 8.1.2, however version 19.0.3 is available.
+        
 ```
