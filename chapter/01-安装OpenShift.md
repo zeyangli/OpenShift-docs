@@ -240,5 +240,7 @@ Collecting passlib
 Installing collected packages: passlib
 Successfully installed passlib-1.7.1
 You are using pip version 8.1.2, however version 19.0.3 is available.
+
+ansible-playbook openshift-ansible/playbooks/openshift-metrics/config.yml
         
 ```
