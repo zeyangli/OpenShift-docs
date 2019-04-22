@@ -196,6 +196,7 @@ request canceled (Client.Timeout exceeded while awaiting headers)
 ```
 [root@node01 ~]# docker images | awk '{print $1":"$2}'
 REPOSITORY:TAG
+quay.io/coreos/cluster-monitoring-operator:v0.1.1
 docker.io/openshift/origin-node:v3.11.0
 docker.io/openshift/origin-control-plane:v3.11
 docker.io/openshift/origin-control-plane:v3.11.0
