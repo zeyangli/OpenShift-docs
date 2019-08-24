@@ -41,7 +41,7 @@ reboot
 ```
 
 ### 1.4 获取安装脚本
-使用下面的源安装ansible2.7，2.4版本的不能使用。
+使用下面的源安装ansible2.7，2.4版本的不能使用,也不能用2.8版本 建议2.7。
 ```
 yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 sed -i -e "s/^enabled=1/enabled=0/" /etc/yum.repos.d/epel.repo
