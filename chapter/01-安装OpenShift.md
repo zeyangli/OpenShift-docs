@@ -37,17 +37,29 @@ ssh-copy-id node03.example.com   # 输入yes，输入密码。
 ```
 yum update -y
 yum install wget git net-tools bind-utils yum-utils iptables-services bridge-utils bash-completion kexec-tools sos psacct -y
+
+yum -y install docker 
 reboot
 ```
 
 ### 1.4 获取安装脚本
 使用下面的源安装ansible2.7，2.4版本的不能使用,也不能用2.8版本 建议2.7。
+
+第一种方式（废弃）
 ```
 yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 sed -i -e "s/^enabled=1/enabled=0/" /etc/yum.repos.d/epel.repo
 yum -y --enablerepo=epel install ansible pyOpenSSL
 ```
+第二种方式
 
+```
+https://releases.ansible.com/ansible/rpm/release/epel-7-x86_64/
+配置官方yum，安装2.7版本ansible/或者直接下载2.7版本的rpm包通过以下方式安装
+
+yum -y install ansible-2.7.8-1.el7.ans.noarch.rpm
+
+```
 下载ansible安装的playbook脚本。
 
 ```
@@ -56,34 +68,53 @@ cd openshift-ansible
 git checkout release-3.11     #切换到对应版本的分支
 ```
 
-### 1.5 导入需要的Image镜像
-需要的镜像列表
+### 1.5 下载需要的Image镜像
+master节点需要的镜像列表
 
 ```
-[root@node01 ~]# docker images
-REPOSITORY                                           TAG                 IMAGE ID            CREATED             SIZE
-docker.io/openshift/origin-node                      v3.11.0             556a4e6d52cb        44 hours ago        1.17 GB
-docker.io/openshift/origin-control-plane             v3.11               24459e9dfa74        44 hours ago        829 MB
-docker.io/openshift/origin-control-plane             v3.11.0             24459e9dfa74        44 hours ago        829 MB
-docker.io/openshift/origin-haproxy-router            v3.11.0             ef1088298e6a        44 hours ago        410 MB
-docker.io/openshift/origin-deployer                  v3.11.0             5d3c9c639024        44 hours ago        384 MB
-docker.io/openshift/origin-template-service-broker   v3.11.0             0f87900796d2        44 hours ago        335 MB
-docker.io/openshift/origin-pod                       v3.11.0             2f0a5aac5c39        44 hours ago        262 MB
-docker.io/openshift/origin-docker-registry           v3.11.0             9dffb2abf1dd        8 weeks ago         310 MB
-docker.io/openshift/origin-console                   v3.11.0             ab1db955ef9e        2 months ago        264 MB
-docker.io/openshift/origin-service-catalog           v3.11.0             eda829aae0a0        2 months ago        330 MB
-docker.io/openshift/origin-web-console               v3.11.0             be30b6cce5fa        5 months ago        339 MB
-docker.io/tripleorocky/coreos-prometheus-operator    v0.23.2             835a7e260b35        7 months ago        47 MB
-quay.io/coreos/prometheus-operator                   v0.23.2             835a7e260b35        7 months ago        47 MB
-docker.io/grafana/grafana                            5.2.1               1bfead9ff707        9 months ago        245 MB
-quay.io/coreos/etcd                                  v3.2.22             ff5dd2137a4f        9 months ago        37.3 MB
-docker.io/openshift/oauth-proxy                      v1.1.0              90c45954eb03        13 months ago       235 MB
+docker.io/openshift/origin-node:v3.11
+docker.io/openshift/origin-node:v3.11.0
+docker.io/openshift/origin-control-plane:v3.11
+docker.io/openshift/origin-control-plane:v3.11.0
+docker.io/openshift/origin-pod:v3.11
+docker.io/openshift/origin-pod:v3.11.0
+docker.io/openshift/origin-deployer:v3.11.0
+docker.io/ubuntu:latest
+docker.io/openshift/origin-console:v3.11
+docker.io/openshift/origin-console:v3.11.0
+docker.io/openshift/origin-service-catalog:v3.11.0
+docker.io/openshift/origin-web-console:v3.11
+docker.io/openshift/origin-web-console:v3.11.0
+docker.io/cockpit/kubernetes:latest
+docker.io/openshift/prometheus-node-exporter:v0.16.0
+quay.io/coreos/kube-rbac-proxy:v0.3.1
+quay.io/coreos/etcd:v3.2.22
+ 
+```
+
+node节点需要的镜像列表
 
 ```
-下载镜像包导入镜像 [镜像压缩包](../others/images)
-
-```
-docker load -i *.tar.gz 
+docker.io/openshift/origin-node:v3.11
+docker.io/openshift/origin-node:v3.11.0
+docker.io/openshift/origin-haproxy-router:v3.11
+docker.io/openshift/origin-haproxy-router:v3.11.0
+docker.io/openshift/origin-pod:v3.11.0
+docker.io/openshift/origin-deployer:v3.11.0
+docker.io/ubuntu:latest
+docker.io/openshift/origin-docker-registry:v3.11
+docker.io/openshift/origin-docker-registry:v3.11.0
+quay.io/coreos/cluster-monitoring-operator:v0.1.1
+quay.io/coreos/prometheus-config-reloader:v0.23.2
+quay.io/coreos/prometheus-operator:v0.23.2
+docker.io/openshift/prometheus-alertmanager:v0.15.2
+docker.io/openshift/prometheus-node-exporter:v0.16.0
+docker.io/openshift/prometheus:v2.3.2
+docker.io/grafana/grafana:5.2.1
+quay.io/coreos/kube-rbac-proxy:v0.3.1
+quay.io/coreos/kube-state-metrics:v1.3.1
+docker.io/openshift/oauth-proxy:v1.1.0
+quay.io/coreos/configmap-reload:v0.0.1
 ```
 
 
@@ -100,6 +131,7 @@ etcd
 
 [OSEv3:vars]
 ansible_ssh_user=root
+openshift_release="3.11"
 openshift_deployment_type=origin
 #因采用虚拟机部署学习 配置此选项跳过主机硬件信息检查
 openshift_disable_check=disk_availability,docker_storage,memory_availability,docker_image_availability
@@ -107,6 +139,10 @@ openshift_master_identity_providers=[{'name':'htpasswd_auth','login':'true','cha
 
 openshift_deployment_type=origin
 os_firewall_use_firewalld=true
+openshift_metrics_install_metrics=false
+openshift_logging_install_logging=false
+ansible_service_broker_install=false
+openshift_enable_service_catalog=false
 
 [masters]
 node01.example.com
@@ -128,12 +164,19 @@ node03.example.com openshift_node_group_name='node-config-compute'
 
 ```
 
+
+
 ### 2.2 开始部署
 
 ```
 ansible-playbook openshift-ansible/playbooks/prerequisites.yml   #执行安装前检查
 
 ansible-playbook openshift-ansible/playbooks/deploy_cluster.yml   #真正的安装集群
+
+#会自动在/etc/yum.repos.d中增加一个openshift的yum源文件
+#替换当中的地址
+%s/mirror.centos.org/mirrors.tuna.tsinghua.edu.cn/g
+
 
 ``` 
 
